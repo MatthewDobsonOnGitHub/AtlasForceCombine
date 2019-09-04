@@ -44,6 +44,7 @@ def standard_deviation(array, error):
 def median_and_stdev(value, determiner):	
 
 # To calculate the standard deviation of the daily flux measurements, we append them to an 	empty array, and so the same for their uncertainties and measurement times (to separate arrays, of course). The standard deviation function we defined at the start requires two inputs: values and  errors of the individual 30-second exposure measurements, in order to compute the error for a lone measurement in a day.
+
 	measurement_clipping_array_o = []  
 	uncertainty_clipping_array_o = []
 
@@ -208,7 +209,9 @@ def weighted_mean_function(dictionary, determiner):
 			weighted_standard_deviation_o = weighted_variance_o**(1/2) 
 			new_error.append(weighted_standard_deviation_o)
 
+
 # Sometimes, we will have a single data point for a day. The weighted standard deviation equation cannot cope with this, as it causes division by zero. For such cases, the intrinsic error for that lone datapoint is used for the 'weighted error', and its value appended to the latter's appropriate array.
+
 
 		elif len(value) == 1:
 
@@ -462,6 +465,7 @@ def general_code(filename, determiner, supernova):
 	data_clp_o = np.array([clipped_mean_data_o["Time"], clipped_mean_data_o["Flux"], clipped_mean_data_o["Error"], clipped_mean_data_o["Number"]])
 	data_clp_c = np.array([clipped_mean_data_c["Time"], clipped_mean_data_c["Flux"], clipped_mean_data_c["Error"], clipped_mean_data_c["Number"]])
 
+
 	# Transpose the data, to have it in multiple columns
 	data_raw_o = data_raw_o.T
 	data_raw_c = data_raw_c.T
@@ -482,6 +486,7 @@ def general_code(filename, determiner, supernova):
 		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Weighted Averages)', footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Clipped Weighted Averages)', footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Clipped Weighted Averages)', footer='\n\n\n')
+
 
 
 	##################################### DATA PLOTTING #####################################
