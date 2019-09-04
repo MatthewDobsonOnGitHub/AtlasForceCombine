@@ -11,6 +11,8 @@ import statistics as stat
 import os
 import sys
 
+############### 	atlas force combine 		##################
+
 ############### WEIGHTED MEAN AND SIGMA CLIPPING OF SUPERNOVA FLUX DATA ###############	
 
 ######### STANDARD DEVIATION FUNCTION #########
