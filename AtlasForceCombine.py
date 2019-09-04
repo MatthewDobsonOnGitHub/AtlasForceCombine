@@ -11,7 +11,7 @@ import statistics as stat
 import os
 import sys
 
-############### 	atlas force combine 		##################
+###############		ATLASFORCECOMBINE		##################
 
 ############### WEIGHTED MEAN AND SIGMA CLIPPING OF SUPERNOVA FLUX DATA ###############	
 
