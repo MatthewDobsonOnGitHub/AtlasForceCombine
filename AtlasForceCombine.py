@@ -43,7 +43,7 @@ def standard_deviation(array, error):
 ######### MEDIAN AND STANDARD DEVIATION FUNCTION ###########
 def median_and_stdev(value, determiner):	
 
-# To calculate the standard deviation of the daily flux measurements, we append them to an 	empty array, and so the same for their uncertainties and measurement times (to separate arrays, of course). The standard deviation function we defined at the start requires two inputs: values and raw errors, in order to compute the error for a lone measurement in a day.
+# To calculate the standard deviation of the daily flux measurements, we append them to an 	empty array, and so the same for their uncertainties and measurement times (to separate arrays, of course). The standard deviation function we defined at the start requires two inputs: values and  errors of the individual 30-second exposure measurements, in order to compute the error for a lone measurement in a day.
 	measurement_clipping_array_o = []  
 	uncertainty_clipping_array_o = []
 
@@ -208,7 +208,7 @@ def weighted_mean_function(dictionary, determiner):
 			weighted_standard_deviation_o = weighted_variance_o**(1/2) 
 			new_error.append(weighted_standard_deviation_o)
 
-# Sometimes, we will have a single data point for a day. The weighted standard deviation equation cannot cope with this, as it causes division by zero. For such cases, the raw error for that lone datapoint is used for the 'weighted error', and its value appended to the latter's appropriate array.
+# Sometimes, we will have a single data point for a day. The weighted standard deviation equation cannot cope with this, as it causes division by zero. For such cases, the intrinsic error for that lone datapoint is used for the 'weighted error', and its value appended to the latter's appropriate array.
 
 		elif len(value) == 1:
 
@@ -459,22 +459,29 @@ def general_code(filename, determiner, supernova):
 	data_raw_c = np.array([raw_data_c["Time"], raw_data_c["Flux"], raw_data_c["STDEV"]])
 	data_wei_o = np.array([mean_data_o["Time"], mean_data_o["Flux"], mean_data_o["Error"], mean_data_o["Number"]])
 	data_wei_c = np.array([mean_data_c["Time"], mean_data_c["Flux"], mean_data_c["Error"], mean_data_c["Number"]])
+	data_clp_o = np.array([clipped_mean_data_o["Time"], clipped_mean_data_o["Flux"], clipped_mean_data_o["Error"], clipped_mean_data_o["Number"]])
+	data_clp_c = np.array([clipped_mean_data_c["Time"], clipped_mean_data_c["Flux"], clipped_mean_data_c["Error"], clipped_mean_data_c["Number"]])
 
 	# Transpose the data, to have it in multiple columns
 	data_raw_o = data_raw_o.T
 	data_raw_c = data_raw_c.T
 	data_wei_o = data_wei_o.T
 	data_wei_c = data_wei_c.T
+	data_clp_o = data_clp_o.T
+	data_clp_c = data_clp_c.T
+
 
 	note = 'SN2019XXXXX forced photometry from ATLAS\n=============================================\nForced photometry values for individual 30s exposures in orange (o) and cyan (c) are provided in the long table. The measurements are are in a flux unit, not magnitudes. But conversion is simple. \nThe flux unit used is microJanskys, so AB mags are just\n\nm_AB  = -2.5*log(Flux * 10^-6) + 8.9\n\nThe error in m_AB can be calculated as above. Of course, will not be meangingful when the significance is < 3 sigma.\nIn those cases, the n-sigma upper limit (you can chose n) can be estimated from \n\n m_AB (n-sigma upper limit) > -2.5*log(n * Flux_error * 10^-6) + 8.9 \n\nIn the two other tables, the multiple measurements per night have been combined into a nightly mean. It is a weighted mean, with the points weighted by the inverse variance. The number of 30s exposures which were combined together is given in the last column. There are a small number of outliers, which you will see.'
 
 	with open(filename_2, 'w') as datafile_id:
 	# here, you open the ascii file
 		
-		np.savetxt(datafile_id, data_raw_o, fmt=['%.5f','%f','%f'], delimiter='\t\t', header=note + '\n\n\n\nTime (MJD), Flux and Flux Error (microjanskys) for Orange Filter (Raw data)',footer='\n\n\n')
-		np.savetxt(datafile_id, data_raw_c, fmt=['%.5f','%f','%f'], delimiter='\t\t', header='Time (MJD), Flux and Flux Error (microjanskys) for Cyan Filter (Raw data)',footer='\n\n\n')
+		np.savetxt(datafile_id, data_raw_o, fmt=['%.5f','%f','%f'], delimiter='\t\t', header=note + '\n\n\n\nTime (MJD), Flux and Flux Error (microjanskys) for Orange Filter (Individual 30-second exposure data)',footer='\n\n\n')
+		np.savetxt(datafile_id, data_raw_c, fmt=['%.5f','%f','%f'], delimiter='\t\t', header='Time (MJD), Flux and Flux Error (microjanskys) for Cyan Filter (Individual 30-second exposure data)',footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Weighted Averages)', footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Weighted Averages)', footer='\n\n\n')
+		np.savetxt(datafile_id, data_wei_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Clipped Weighted Averages)', footer='\n\n\n')
+		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Clipped Weighted Averages)', footer='\n\n\n')
 
 
 	##################################### DATA PLOTTING #####################################
@@ -535,7 +542,7 @@ def general_code(filename, determiner, supernova):
 	#plt.xlim([,])
 	#plt.ylim([-100,325])
 
-	fig_name = supernova + '_flux_vs_time_raw_weighted_clipped.pdf'
+	fig_name = supernova + '_flux_vs_time_weighted_clipped.pdf'
 
 	# Before plotting the figure, we save it
 	plt.savefig(fig_name)
