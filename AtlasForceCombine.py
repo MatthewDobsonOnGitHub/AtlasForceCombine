@@ -11,7 +11,11 @@ import statistics as stat
 import os
 import sys
 
-###############		ATLASFORCECOMBINE		##################
+#########################################################################
+#######################	ATLASFORCECOMBINE CODE ##########################
+##########################################################################
+
+
 
 ############### WEIGHTED MEAN AND SIGMA CLIPPING OF SUPERNOVA FLUX DATA ###############	
 
@@ -356,7 +360,7 @@ def general_code(filename, determiner, supernova):
 				
 					# The syntax here is: dictionary["(new)key"].append(array)
 					# What this does is append the data of a single measurement to the dictionary appropriate to its filter; the key becomes the integer date it was measured on, and its value the dictionary of data for that measurement. Since it's very likely that more than one measurement will occur on a given day, the data of further measurements on the same day are APPENDED to the same key.
-		# Thus, each key is an integer day, and the value an array, each element of which is a dictionary of the data for a given measurement.
+					# Thus, each key is an integer day, and the value an array, each element of which is a dictionary of the data for a given measurement.
 						odict[int(float(row["mjd"]))].append(dict(row))
 			
 					# However, if this key does not exist, we need to create this key:value pair to begin with, creating it as an empty list. However, the following code must be kept separate, and run only once per measurement day analysed, as repeating this will erase all rows of data apart from the last one in the day.     
@@ -477,7 +481,7 @@ def general_code(filename, determiner, supernova):
 	data_clp_c = data_clp_c.T
 
 
-	note = 'SN2019XXXXX forced photometry from ATLAS\n=============================================\nForced photometry values for individual 30s exposures in orange (o) and cyan (c) are provided in the long table. The measurements are are in a flux unit, not magnitudes. But conversion is simple. \nThe flux unit used is microJanskys, so AB mags are just\n\nm_AB  = -2.5*log(Flux * 10^-6) + 8.9\n\nThe error in m_AB can be calculated as above. Of course, will not be meangingful when the significance is < 3 sigma.\nIn those cases, the n-sigma upper limit (you can chose n) can be estimated from \n\n m_AB (n-sigma upper limit) > -2.5*log(n * Flux_error * 10^-6) + 8.9 \n\nIn the two other tables, the multiple measurements per night have been combined into a nightly mean. It is a weighted mean, with the points weighted by the inverse variance. The number of 30s exposures which were combined together is given in the last column. There are a small number of outliers, which you will see.'
+	note = 'Forced photometry from ATLAS\n=============================================\nForced photometry values for individual 30s exposures in orange (o) and cyan (c) are provided in the two former (long) tables. The measurements are are in a flux unit, not magnitudes. But conversion is simple. \nThe flux unit used is microJanskys, so AB mags are just\n\n\tm_AB  = -2.5*log(Flux * 10^-6) + 8.9\n\nThe error in m_AB can be calculated as above. Of course, will not be meangingful when the significance is < 3 sigma.\nIn those cases, the n-sigma upper limit (you can chose n) can be estimated from \n\n\tm_AB (n-sigma upper limit) > -2.5*log(n * Flux_error * 10^-6) + 8.9 \n\nIn the middle two tables, the multiple measurements per night have been combined into a nightly mean. It is a weighted mean, with the points weighted by the inverse variance. \n\n In the latter two tables, the multiple measurements per night have been sigma-clipped, with points lying beyond 3 sigma from the nightly mean removed. The remaining points have been combined into a weighted mean, with points weighted by inverse variance (as before). \n\n For the latter four tables, the number of 30s exposures which were combined together for each night is given in the last column. There are a small number of outliers which remain after 3-sigma clipping, which you will see.'
 
 	with open(filename_2, 'w') as datafile_id:
 	# here, you open the ascii file
@@ -486,8 +490,8 @@ def general_code(filename, determiner, supernova):
 		np.savetxt(datafile_id, data_raw_c, fmt=['%.5f','%f','%f'], delimiter='\t\t', header='Time (MJD), Flux and Flux Error (microjanskys) for Cyan Filter (Individual 30-second exposure data)',footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Weighted Averages)', footer='\n\n\n')
 		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Weighted Averages)', footer='\n\n\n')
-		np.savetxt(datafile_id, data_wei_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Clipped Weighted Averages)', footer='\n\n\n')
-		np.savetxt(datafile_id, data_wei_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Clipped Weighted Averages)', footer='\n\n\n')
+		np.savetxt(datafile_id, data_clp_o, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Orange Filter (Clipped Weighted Averages)', footer='\n\n\n')
+		np.savetxt(datafile_id, data_clp_c, fmt=['%.5f','%f','%f','%d'], delimiter='\t\t', header='Time (MJD), Flux, Flux Error (microjanskys) and No. Measurements per Weighted Mean for Cyan Filter (Clipped Weighted Averages)', footer='\n\n\n')
 
 
 
@@ -556,18 +560,19 @@ def general_code(filename, determiner, supernova):
 
 	# Now we display the figure itself!
 	# The block=False is to enable the following; we print the plot to the screen, hold for 2 seonds, then close. This allows the code to run for many data files without the user needing to manually perform running the code for each file -- enough time to glimpse each plot, but brief enough to ensure the code can run for many files within a reasonable timeframe.
-	plt.show(block=False)
-	plt.pause(1)
-	plt.close()
+	plt.show()	
+	#plt.show(block=False)
+	#plt.pause(1)
+	#plt.close()
 
 
 #####################################################################################
 
-# To call this code for multiple files, use the following code in a bash terminal:
+# To call this code for multiple files of a given 'format', use the following code in a bash terminal:
 
-#	for file in `ls *.csv`; do python test.py $file; done
+#	for file in `ls *.format`; do python AtlasForceCombine.py $file; done
 
-# Note the backquote ` -- it means take the result of the command to list all the .csv files (the asterisk), and iterate through each one line by line. 'file' is the result of the `ls *.csv` and the 'do' loop is the oject which performs the iteration. (syntax: for "files" do "everything in the do loop" done (done closes the loop). A variable inside bash is represented by the dollar $ sign.
+# Note the backquote ` -- it means take the result of the command to list all the .format files (the asterisk), and iterate through each one line by line. 'file' is the result of the `ls *.csv` and the 'do' loop is the oject which performs the iteration. (syntax: for "files" do "everything in the do loop" done (done closes the loop). A variable inside bash is represented by the dollar $ sign.
 
 # Defining the code this way allows it to run on multiple files in one sitting; one need type into the command line
 
