@@ -11,10 +11,7 @@ import statistics as stat
 import os
 import sys
 
-#########################################################################
-#######################	ATLASFORCECOMBINE CODE ##########################
-##########################################################################
-
+#******************************	ATLASFORCECOMBINE CODE **********************************
 
 
 ############### WEIGHTED MEAN AND SIGMA CLIPPING OF SUPERNOVA FLUX DATA ###############	
@@ -334,10 +331,13 @@ def general_code(filename, determiner, supernova):
 		    
 		    	# Ensures that a given observation has enough data from which the observed flux can be calculated.
 		    
-			if row["mjd"] != 'None' and row["peakfit"] != 'None' and row["major"] != 'None' and row["minor"] != 'None' and row["zp"] != 'None' and row["apfit"] != 'None':
+			if (row["mjd"] != 'None' and row["peakfit"] != 'None' and row["major"] != 'None' and row["minor"] != 'None' and row["zp"] != 'None' and row["apfit"] != 'None') and (row["mjd"] != '' and row["peakfit"] != '' and row["major"] != '' and row["minor"] != '' and row["zp"] != '' and row["apfit"] != ''):
 			
 				# Here, we calculated the flux and its uncertainty for every measurement, and append the values as new key:value pairs to that measurement's dictionary.
-			
+				print("zp:", row["zp"])
+				#print(row["zp"])
+				print("apfit:", row["apfit"])
+				#print(row["apfit"])
 				index = (float(row["zp"]) + float(row["apfit"]))/(-2.5) + 9.56
 
 				flux_numerator = float(row["peakfit"])*float(row["major"])*float(row["minor"])
@@ -380,6 +380,10 @@ def general_code(filename, determiner, supernova):
 				
 						cdict[int(float(row["mjd"]))] = []
 						cdict[int(float(row["mjd"]))].append(dict(row))
+
+			else:
+
+				continue
 
 	elif determiner == 2:
 
@@ -560,10 +564,10 @@ def general_code(filename, determiner, supernova):
 
 	# Now we display the figure itself!
 	# The block=False is to enable the following; we print the plot to the screen, hold for 2 seonds, then close. This allows the code to run for many data files without the user needing to manually perform running the code for each file -- enough time to glimpse each plot, but brief enough to ensure the code can run for many files within a reasonable timeframe.
-	plt.show()	
-	#plt.show(block=False)
-	#plt.pause(1)
-	#plt.close()
+	#plt.show()	
+	plt.show(block=False)
+	plt.pause(1)
+	plt.close()
 
 
 #####################################################################################
